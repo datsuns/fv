@@ -1,6 +1,6 @@
 .PHONY: default build cui test
 
-TARGET = fb.exe
+TARGET = fv.exe
 
 defaut: build
 
