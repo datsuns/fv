@@ -22,7 +22,6 @@ func NewMyListBox(parent walk.Container) (*MyListBox, error) {
 	}
 
 	mlb := &MyListBox{lb}
-
 	if err := walk.InitWrapperWindow(mlb); err != nil {
 		return nil, err
 	}
@@ -30,6 +29,6 @@ func NewMyListBox(parent walk.Container) (*MyListBox, error) {
 	return mlb, nil
 }
 
-func (lb *MyListBox) WndProc(hwnd win.HWND, msg uint32, wParam, lParam uintptr) uintptr {
-	return lb.ListBox.WndProc(hwnd, msg, wParam, lParam)
+func (mlb *MyListBox) WndProc(hwnd win.HWND, msg uint32, wParam, lParam uintptr) uintptr {
+	return mlb.ListBox.WndProc(hwnd, msg, wParam, lParam)
 }
