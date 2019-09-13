@@ -4,7 +4,7 @@
 
 // +build windows
 
-package walk
+package main
 
 import (
 	"fmt"
@@ -17,7 +17,7 @@ import (
 	"github.com/lxn/win"
 )
 
-type ListBox struct {
+type MyListBox struct {
 	WidgetBase
 	model                           ListModel
 	providedModel                   interface{}
@@ -45,12 +45,12 @@ type ListBox struct {
 	trackingMouseEvent              bool
 }
 
-func NewListBox(parent Container) (*ListBox, error) {
+func NewListBox(parent Container) (*MyListBox, error) {
 	return NewListBoxWithStyle(parent, 0)
 }
 
-func NewListBoxWithStyle(parent Container, style uint32) (*ListBox, error) {
-	lb := new(ListBox)
+func NewListBoxWithStyle(parent Container, style uint32) (*MyListBox, error) {
+	lb := new(MyListBox)
 
 	err := InitWidget(
 		lb,
@@ -110,19 +110,19 @@ func NewListBoxWithStyle(parent Container, style uint32) (*ListBox, error) {
 	return lb, nil
 }
 
-func (*ListBox) LayoutFlags() LayoutFlags {
+func (*MyListBox) LayoutFlags() LayoutFlags {
 	return ShrinkableHorz | ShrinkableVert | GrowableHorz | GrowableVert | GreedyHorz | GreedyVert
 }
 
-func (lb *ListBox) ItemStyler() ListItemStyler {
+func (lb *MyListBox) ItemStyler() ListItemStyler {
 	return lb.styler
 }
 
-func (lb *ListBox) SetItemStyler(styler ListItemStyler) {
+func (lb *MyListBox) SetItemStyler(styler ListItemStyler) {
 	lb.styler = styler
 }
 
-func (lb *ListBox) ApplySysColors() {
+func (lb *MyListBox) ApplySysColors() {
 	lb.WidgetBase.ApplySysColors()
 
 	var hc win.HIGHCONTRAST
@@ -138,13 +138,13 @@ func (lb *ListBox) ApplySysColors() {
 	lb.themeSelectedNotFocusedBGColor = Color(win.GetSysColor(win.COLOR_BTNFACE))
 }
 
-func (lb *ListBox) ApplyDPI(dpi int) {
+func (lb *MyListBox) ApplyDPI(dpi int) {
 	lb.style.dpi = dpi
 
 	lb.WidgetBase.ApplyDPI(dpi)
 }
 
-func (lb *ListBox) applyFont(font *Font) {
+func (lb *MyListBox) applyFont(font *Font) {
 	lb.WidgetBase.applyFont(font)
 
 	for i := range lb.lastWidthsMeasuredFor {
@@ -152,7 +152,7 @@ func (lb *ListBox) applyFont(font *Font) {
 	}
 }
 
-func (lb *ListBox) itemString(index int) string {
+func (lb *MyListBox) itemString(index int) string {
 	switch val := lb.model.Value(index).(type) {
 	case string:
 		return val
@@ -171,7 +171,7 @@ func (lb *ListBox) itemString(index int) string {
 }
 
 //insert one item from list model
-func (lb *ListBox) insertItemAt(index int) error {
+func (lb *MyListBox) insertItemAt(index int) error {
 	str := lb.itemString(index)
 	lp := uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(str)))
 	ret := int(lb.SendMessage(win.LB_INSERTSTRING, uintptr(index), lp))
@@ -181,7 +181,7 @@ func (lb *ListBox) insertItemAt(index int) error {
 	return nil
 }
 
-func (lb *ListBox) removeItem(index int) error {
+func (lb *MyListBox) removeItem(index int) error {
 	if win.LB_ERR == int(lb.SendMessage(win.LB_DELETESTRING, uintptr(index), 0)) {
 		return newError("SendMessage(LB_DELETESTRING)")
 	}
@@ -190,7 +190,7 @@ func (lb *ListBox) removeItem(index int) error {
 }
 
 // reread all the items from list model
-func (lb *ListBox) resetItems() error {
+func (lb *MyListBox) resetItems() error {
 	lb.SetSuspended(true)
 	defer lb.SetSuspended(false)
 
@@ -223,7 +223,7 @@ func (lb *ListBox) resetItems() error {
 	return nil
 }
 
-func (lb *ListBox) ensureVisibleItemsHeightUpToDate() error {
+func (lb *MyListBox) ensureVisibleItemsHeightUpToDate() error {
 	if lb.styler == nil {
 		return nil
 	}
@@ -268,7 +268,7 @@ func (lb *ListBox) ensureVisibleItemsHeightUpToDate() error {
 	return nil
 }
 
-func (lb *ListBox) attachModel() {
+func (lb *MyListBox) attachModel() {
 	itemsResetHandler := func() {
 		lb.resetItems()
 	}
@@ -328,7 +328,7 @@ func (lb *ListBox) attachModel() {
 	})
 }
 
-func (lb *ListBox) detachModel() {
+func (lb *MyListBox) detachModel() {
 	lb.model.ItemsReset().Detach(lb.itemsResetHandlerHandle)
 	lb.model.ItemChanged().Detach(lb.itemChangedHandlerHandle)
 	lb.model.ItemsInserted().Detach(lb.itemsInsertedHandlerHandle)
@@ -336,7 +336,7 @@ func (lb *ListBox) detachModel() {
 }
 
 // Model returns the model of the ListBox.
-func (lb *ListBox) Model() interface{} {
+func (lb *MyListBox) Model() interface{} {
 	return lb.providedModel
 }
 
@@ -344,7 +344,7 @@ func (lb *ListBox) Model() interface{} {
 //
 // It is required that mdl either implements walk.ListModel or
 // walk.ReflectListModel or be a slice of pointers to struct or a []string.
-func (lb *ListBox) SetModel(mdl interface{}) error {
+func (lb *MyListBox) SetModel(mdl interface{}) error {
 	model, ok := mdl.(ListModel)
 	if !ok && mdl != nil {
 		var err error
@@ -382,7 +382,7 @@ func (lb *ListBox) SetModel(mdl interface{}) error {
 //
 // This is only applicable to walk.ReflectListModel models and simple slices of
 // pointers to struct.
-func (lb *ListBox) DataMember() string {
+func (lb *MyListBox) DataMember() string {
 	return lb.dataMember
 }
 
@@ -402,7 +402,7 @@ func (lb *ListBox) DataMember() string {
 // If dataMember is not a simple member name like "Foo", but a path to a
 // member like "A.B.Foo", members "A" and "B" both must be one of the options
 // mentioned above, but with T having type pointer to struct.
-func (lb *ListBox) SetDataMember(dataMember string) error {
+func (lb *MyListBox) SetDataMember(dataMember string) error {
 	if dataMember != "" {
 		if _, ok := lb.providedModel.([]string); ok {
 			return newError("invalid for []string model")
@@ -418,23 +418,23 @@ func (lb *ListBox) SetDataMember(dataMember string) error {
 	return nil
 }
 
-func (lb *ListBox) Format() string {
+func (lb *MyListBox) Format() string {
 	return lb.format
 }
 
-func (lb *ListBox) SetFormat(value string) {
+func (lb *MyListBox) SetFormat(value string) {
 	lb.format = value
 }
 
-func (lb *ListBox) Precision() int {
+func (lb *MyListBox) Precision() int {
 	return lb.precision
 }
 
-func (lb *ListBox) SetPrecision(value int) {
+func (lb *MyListBox) SetPrecision(value int) {
 	lb.precision = value
 }
 
-func (lb *ListBox) calculateMaxItemTextWidth() int {
+func (lb *MyListBox) calculateMaxItemTextWidth() int {
 	hdc := win.GetDC(lb.hWnd)
 	if hdc == 0 {
 		newError("GetDC failed")
@@ -467,7 +467,7 @@ func (lb *ListBox) calculateMaxItemTextWidth() int {
 	return maxWidth
 }
 
-func (lb *ListBox) idealSize() Size {
+func (lb *MyListBox) idealSize() Size {
 	defaultSize := lb.dialogBaseUnitsToPixels(Size{50, 12})
 
 	if lb.maxItemTextWidth <= 0 {
@@ -481,7 +481,7 @@ func (lb *ListBox) idealSize() Size {
 	return Size{w, h}
 }
 
-func (lb *ListBox) ItemVisible(index int) bool {
+func (lb *MyListBox) ItemVisible(index int) bool {
 	topIndex := int(lb.SendMessage(win.LB_GETTOPINDEX, 0, 0))
 	var rc win.RECT
 	lb.SendMessage(win.LB_GETITEMRECT, uintptr(index), uintptr(unsafe.Pointer(&rc)))
@@ -489,15 +489,15 @@ func (lb *ListBox) ItemVisible(index int) bool {
 	return index >= topIndex && int(rc.Top) < lb.HeightPixels()
 }
 
-func (lb *ListBox) EnsureItemVisible(index int) {
+func (lb *MyListBox) EnsureItemVisible(index int) {
 	lb.SendMessage(win.LB_SETTOPINDEX, uintptr(index), 0)
 }
 
-func (lb *ListBox) CurrentIndex() int {
+func (lb *MyListBox) CurrentIndex() int {
 	return int(int32(lb.SendMessage(win.LB_GETCURSEL, 0, 0)))
 }
 
-func (lb *ListBox) SetCurrentIndex(value int) error {
+func (lb *MyListBox) SetCurrentIndex(value int) error {
 	if value > -1 && win.LB_ERR == int(int32(lb.SendMessage(win.LB_SETCURSEL, uintptr(value), 0))) {
 		return newError("Invalid index or ensure lb is single-selection listbox")
 	}
@@ -510,7 +510,7 @@ func (lb *ListBox) SetCurrentIndex(value int) error {
 	return nil
 }
 
-func (lb *ListBox) SelectedIndexes() []int {
+func (lb *MyListBox) SelectedIndexes() []int {
 	count := int(int32(lb.SendMessage(win.LB_GETCOUNT, 0, 0)))
 	if count < 1 {
 		return nil
@@ -527,7 +527,7 @@ func (lb *ListBox) SelectedIndexes() []int {
 	}
 }
 
-func (lb *ListBox) SetSelectedIndexes(indexes []int) {
+func (lb *MyListBox) SetSelectedIndexes(indexes []int) {
 	var m int32 = -1
 	lb.SendMessage(win.LB_SETSEL, win.FALSE, uintptr(m))
 	for _, v := range indexes {
@@ -536,19 +536,19 @@ func (lb *ListBox) SetSelectedIndexes(indexes []int) {
 	lb.selectedIndexesChangedPublisher.Publish()
 }
 
-func (lb *ListBox) CurrentIndexChanged() *Event {
+func (lb *MyListBox) CurrentIndexChanged() *Event {
 	return lb.currentIndexChangedPublisher.Event()
 }
 
-func (lb *ListBox) SelectedIndexesChanged() *Event {
+func (lb *MyListBox) SelectedIndexesChanged() *Event {
 	return lb.selectedIndexesChangedPublisher.Event()
 }
 
-func (lb *ListBox) ItemActivated() *Event {
+func (lb *MyListBox) ItemActivated() *Event {
 	return lb.itemActivatedPublisher.Event()
 }
 
-func (lb *ListBox) WndProc(hwnd win.HWND, msg uint32, wParam, lParam uintptr) uintptr {
+func (lb *MyListBox) WndProc(hwnd win.HWND, msg uint32, wParam, lParam uintptr) uintptr {
 	switch msg {
 	case win.WM_MEASUREITEM:
 		if lb.styler == nil {
@@ -738,13 +738,13 @@ func (lb *ListBox) WndProc(hwnd win.HWND, msg uint32, wParam, lParam uintptr) ui
 	return lb.WidgetBase.WndProc(hwnd, msg, wParam, lParam)
 }
 
-func (lb *ListBox) invalidateItem(index int) {
+func (lb *MyListBox) invalidateItem(index int) {
 	var rc win.RECT
 	lb.SendMessage(win.LB_GETITEMRECT, uintptr(index), uintptr(unsafe.Pointer(&rc)))
 
 	win.InvalidateRect(lb.hWnd, &rc, true)
 }
 
-func (lb *ListBox) CreateLayoutItem(ctx *LayoutContext) LayoutItem {
+func (lb *MyListBox) CreateLayoutItem(ctx *LayoutContext) LayoutItem {
 	return NewGreedyLayoutItem()
 }
