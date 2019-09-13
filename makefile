@@ -1,4 +1,4 @@
-.PHONY: default build cui
+.PHONY: default build cui test
 
 TARGET = fb.exe
 
@@ -9,3 +9,6 @@ build:
 
 cui:
 	go build -o $(TARGET)
+
+test: cui
+	./$(TARGET)

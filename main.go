@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"github.com/lxn/walk"
 	. "github.com/lxn/walk/declarative"
-	"strings"
 )
 
 func main() {
@@ -29,13 +28,6 @@ func main() {
 						AssignTo: &outTE,
 						ReadOnly: true,
 					},
-				},
-			},
-			PushButton{
-				Text: "SCREAM",
-				OnClicked: func() {
-					fmt.Println("Click")
-					outTE.SetText(strings.ToUpper(inTE.Text()))
 				},
 			},
 		},
