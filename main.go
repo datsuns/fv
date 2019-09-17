@@ -73,12 +73,3 @@ func main() {
 	//))
 	mw.Run()
 }
-
-//tv.MustRegisterProperty("ItemCount", NewReadOnlyProperty(
-//	func() interface{} {
-//		if tv.model == nil {
-//			return 0
-//		}
-//		return tv.model.RowCount()
-//	},
-//	tv.itemCountChangedPublisher.Event()))
