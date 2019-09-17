@@ -5,8 +5,6 @@ import (
 	"github.com/lxn/walk"
 	. "github.com/lxn/walk/declarative"
 	//"github.com/lxn/win"
-	"os"
-	"strings"
 )
 
 func main() {
