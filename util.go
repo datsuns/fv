@@ -410,3 +410,56 @@ func Msg2Str(msg uint32) string {
 		return "UNKNOWN"
 	}
 }
+
+func LvMsg2Str(msg uint32) string {
+	switch msg {
+	case win.LVN_ITEMCHANGING:
+		return "LVN_ITEMCHANGING"
+	case win.LVN_ITEMCHANGED:
+		return "LVN_ITEMCHANGED"
+	case win.LVN_INSERTITEM:
+		return "LVN_INSERTITEM"
+	case win.LVN_DELETEITEM:
+		return "LVN_DELETEITEM"
+	case win.LVN_DELETEALLITEMS:
+		return "LVN_DELETEALLITEMS"
+	case win.LVN_BEGINLABELEDIT:
+		return "LVN_BEGINLABELEDIT"
+	case win.LVN_ENDLABELEDIT:
+		return "LVN_ENDLABELEDIT"
+	case win.LVN_COLUMNCLICK:
+		return "LVN_COLUMNCLICK"
+	case win.LVN_BEGINDRAG:
+		return "LVN_BEGINDRAG"
+	case win.LVN_BEGINRDRAG:
+		return "LVN_BEGINRDRAG"
+	case win.LVN_ODCACHEHINT:
+		return "LVN_ODCACHEHINT"
+	case win.LVN_ODFINDITEM:
+		return "LVN_ODFINDITEM"
+	case win.LVN_ITEMACTIVATE:
+		return "LVN_ITEMACTIVATE"
+	case win.LVN_ODSTATECHANGED:
+		return "LVN_ODSTATECHANGED"
+	case win.LVN_HOTTRACK:
+		return "LVN_HOTTRACK"
+	case win.LVN_GETDISPINFO:
+		return "LVN_GETDISPINFO"
+	case win.LVN_SETDISPINFO:
+		return "LVN_SETDISPINFO"
+	case win.LVN_KEYDOWN:
+		return "LVN_KEYDOWN"
+	case win.LVN_MARQUEEBEGIN:
+		return "LVN_MARQUEEBEGIN"
+	case win.LVN_GETINFOTIP:
+		return "LVN_GETINFOTIP"
+	case win.LVN_INCREMENTALSEARCH:
+		return "LVN_INCREMENTALSEARCH"
+	case win.LVN_BEGINSCROLL:
+		return "LVN_BEGINSCROLL"
+	case win.LVN_ENDSCROLL:
+		return "LVN_ENDSCROLL"
+	default:
+		return "UNKNOWN"
+	}
+}
