@@ -58,11 +58,11 @@ func main() {
 		//	},
 	}.Create()
 
-	left, err := NewMyListBox(mw, "LEFT")
+	left, err := NewMyListBox(mw, "LEFT", "/")
 	if err != nil {
 		panic(err)
 	}
-	right, err := NewMyListBox(mw, "RIGHT")
+	right, err := NewMyListBox(mw, "RIGHT", "/")
 	if err != nil {
 		panic(err)
 	}

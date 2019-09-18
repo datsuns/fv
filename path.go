@@ -20,7 +20,7 @@ func (p *Path) Load() error {
 		return err
 	}
 	for _, e := range entries {
-		p.Childs = append(p.Childs, e)
+		p.Childs = append(p.Childs, filepath.Base(e))
 	}
 	return nil
 }

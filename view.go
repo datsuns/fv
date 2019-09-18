@@ -23,12 +23,12 @@ var (
 	}
 )
 
-func NewMyListBox(parent walk.Container, name string) (*MyListBox, error) {
+func NewMyListBox(parent walk.Container, name string, root string) (*MyListBox, error) {
 	lb, err := walk.NewListBox(parent)
 	if err != nil {
 		return nil, err
 	}
-	mlb := &MyListBox{lb, NewMyModel(), name, 0, nil}
+	mlb := &MyListBox{lb, NewMyModel(root), name, 0, nil}
 	lb.SetModel(mlb.model)
 
 	if err := walk.InitWrapperWindow(mlb); err != nil {
@@ -65,9 +65,9 @@ type MyModel struct {
 	path *Path
 }
 
-func NewMyModel() *MyModel {
+func NewMyModel(root string) *MyModel {
 	m := &MyModel{}
-	m.path = NewPath("/")
+	m.path = NewPath(root)
 	m.path.Load()
 	return m
 }
