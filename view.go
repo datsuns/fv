@@ -3,9 +3,10 @@
 package main
 
 import (
-	//"fmt"
+	"fmt"
 	"github.com/lxn/walk"
 	"github.com/lxn/win"
+	"unsafe"
 )
 
 type MyView struct {
@@ -44,26 +45,46 @@ func NewMyView(parent walk.Container, name string, root string) (*MyView, error)
 }
 
 func (mv *MyView) WndProc(hwnd win.HWND, msg uint32, wParam, lParam uintptr) uintptr {
-	//fmt.Printf("[%v] [%v]\n", mv.name, Msg2Str(msg))
-	//switch msg {
-	//case win.WM_KEYDOWN:
-	//	if walk.Key(wParam) == mv.key {
-	//		fmt.Printf("[%s] change forcus\n", mv.name)
-	//		mv.neigbor.SetFocus()
-	//		return 0
-	//	} else if walk.Key(wParam) == walk.KeyReturn {
-	//		idx := mv.ListBox.CurrentIndex()
-	//		v, _ := mv.model.Value(idx).(string)
-	//		fmt.Printf("[%s] return w/ [%v:%v]\n", mv.name, idx, v)
-	//		mv.ListBox.WndProc(hwnd, msg, wParam, lParam)
-	//		mv.model.Enter(v)
-	//		mv.ListBox.SetModel(mv.model)
-	//	} else if mapped, exists := keyMap[walk.Key(wParam)]; exists {
-	//		return mv.ListBox.WidgetBase.WndProc(hwnd, msg, uintptr(mapped), lParam)
-	//	}
-	//case win.WM_CHAR:
-	//	return 0
-	//}
+	switch msg {
+	case win.WM_NOTIFY:
+		nmh := ((*win.NMHDR)(unsafe.Pointer(lParam)))
+		//fmt.Printf("[%v] [%v]\n", mv.name, LvMsg2Str(nmh.Code))
+		switch nmh.Code {
+		case win.LVN_KEYDOWN:
+			info := ((*win.NMTVKEYDOWN)(unsafe.Pointer(lParam)))
+			key := walk.Key(info.WVKey)
+			fmt.Printf("[%s] keydown [%v][%v]\n", mv.name, key, info)
+			if key == mv.key {
+				fmt.Printf("[%s] change forcus\n", mv.name)
+				mv.neigbor.SetFocus()
+				return 0
+			} else if mapped, exists := keyMap[key]; exists {
+				fmt.Printf("[%s] mapped to [%v]\n", mv.name, mapped)
+				info.WVKey = uint16(mapped)
+				fmt.Printf("[%s] map [%v]\n", mv.name, info)
+				// TODO maybe item-changed method?
+				return mv.TableView.WndProc(hwnd, msg, wParam, lParam)
+			}
+		}
+
+		//case win.WM_KEYDOWN:
+		//	if walk.Key(wParam) == mv.key {
+		//		fmt.Printf("[%s] change forcus\n", mv.name)
+		//		mv.neigbor.SetFocus()
+		//		return 0
+		//	} else if walk.Key(wParam) == walk.KeyReturn {
+		//		//idx := mv.ListBox.CurrentIndex()
+		//		//v, _ := mv.model.Value(idx).(string)
+		//		//fmt.Printf("[%s] return w/ [%v:%v]\n", mv.name, idx, v)
+		//		//mv.ListBox.WndProc(hwnd, msg, wParam, lParam)
+		//		//mv.model.Enter(v)
+		//		//mv.ListBox.SetModel(mv.model)
+		//	} else if mapped, exists := keyMap[walk.Key(wParam)]; exists {
+		//		return mv.TableView.WndProc(hwnd, msg, uintptr(mapped), lParam)
+		//	}
+		//case win.WM_CHAR:
+		//	return 0
+	}
 	return mv.TableView.WndProc(hwnd, msg, wParam, lParam)
 }
 
