@@ -7,7 +7,7 @@
 package main
 
 import (
-	"fmt"
+	//"fmt"
 	"github.com/lxn/walk"
 	"github.com/lxn/win"
 )
@@ -16,6 +16,13 @@ type MyListBox struct {
 	*walk.ListBox
 	model *MyModel
 }
+
+var (
+	keyMap map[walk.Key]walk.Key = map[walk.Key]walk.Key{
+		walk.KeyJ: walk.KeyDown,
+		walk.KeyK: walk.KeyUp,
+	}
+)
 
 func NewMyListBox(parent walk.Container) (*MyListBox, error) {
 	lb, err := walk.NewListBox(parent)
@@ -35,9 +42,8 @@ func NewMyListBox(parent walk.Container) (*MyListBox, error) {
 func (mlb *MyListBox) WndProc(hwnd win.HWND, msg uint32, wParam, lParam uintptr) uintptr {
 	switch msg {
 	case win.WM_KEYDOWN:
-		fmt.Printf("WM_KEYDOWN\n")
-		if walk.Key(wParam) == walk.KeyReturn {
-			return mlb.ListBox.WidgetBase.WndProc(hwnd, msg, wParam, lParam)
+		if mapped, exists := keyMap[walk.Key(wParam)]; exists {
+			return mlb.ListBox.WidgetBase.WndProc(hwnd, msg, uintptr(mapped), lParam)
 		}
 	}
 	return mlb.ListBox.WndProc(hwnd, msg, wParam, lParam)
