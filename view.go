@@ -46,6 +46,13 @@ func (mlb *MyListBox) WndProc(hwnd win.HWND, msg uint32, wParam, lParam uintptr)
 			fmt.Printf("[%s] change forcus\n", mlb.name)
 			mlb.neigbor.SetFocus()
 			return 0
+		} else if walk.Key(wParam) == walk.KeyReturn {
+			idx := mlb.ListBox.CurrentIndex()
+			v, _ := mlb.model.Value(idx).(string)
+			fmt.Printf("[%s] return w/ [%v:%v]\n", mlb.name, idx, v)
+			mlb.ListBox.WndProc(hwnd, msg, wParam, lParam)
+			mlb.model.Enter(v)
+			mlb.ListBox.SetModel(mlb.model)
 		} else if mapped, exists := keyMap[walk.Key(wParam)]; exists {
 			return mlb.ListBox.WidgetBase.WndProc(hwnd, msg, uintptr(mapped), lParam)
 		}
@@ -62,20 +69,24 @@ func (mlb *MyListBox) RegisterNeigbor(neigbor *MyListBox, key walk.Key) {
 
 type MyModel struct {
 	walk.ListModelBase
-	path *Path
+	Path *Path
 }
 
 func NewMyModel(root string) *MyModel {
 	m := &MyModel{}
-	m.path = NewPath(root)
-	m.path.Load()
+	m.Path = NewPath(root)
+	m.Path.Load()
 	return m
 }
 
 func (m *MyModel) ItemCount() int {
-	return m.path.Len()
+	return m.Path.Len()
 }
 
 func (m *MyModel) Value(index int) interface{} {
-	return m.path.At(index)
+	return m.Path.At(index)
+}
+
+func (m *MyModel) Enter(next string) {
+	m.Path.Enter(next)
 }
