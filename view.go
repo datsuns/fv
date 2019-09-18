@@ -3,7 +3,7 @@
 package main
 
 import (
-	"fmt"
+	//"fmt"
 	"github.com/lxn/walk"
 	"github.com/lxn/win"
 )
@@ -44,7 +44,7 @@ func NewMyView(parent walk.Container, name string, root string) (*MyView, error)
 }
 
 func (mv *MyView) WndProc(hwnd win.HWND, msg uint32, wParam, lParam uintptr) uintptr {
-	fmt.Printf("[%v] [%v]\n", mv.name, Msg2Str(msg))
+	//fmt.Printf("[%v] [%v]\n", mv.name, Msg2Str(msg))
 	//switch msg {
 	//case win.WM_KEYDOWN:
 	//	if walk.Key(wParam) == mv.key {
@@ -73,25 +73,114 @@ func (mv *MyView) RegisterNeigbor(neigbor *MyView, key walk.Key) {
 }
 
 type MyModel struct {
-	walk.ListModelBase
-	Path *Path
+	walk.TableModelBase
+	walk.SorterBase
+	sortColumn int
+	sortOrder  walk.SortOrder
+	item       *Path
 }
 
 func NewMyModel(root string) *MyModel {
 	m := &MyModel{}
-	m.Path = NewPath(root)
-	m.Path.Load()
+	m.item = NewPath(root)
+	m.item.Load()
 	return m
 }
 
-func (m *MyModel) ItemCount() int {
-	return m.Path.Len()
+// Called by the TableView from SetModel and every time the model publishes a
+// RowsReset event.
+func (m *MyModel) RowCount() int {
+	return m.item.Len()
 }
 
-func (m *MyModel) Value(index int) interface{} {
-	return m.Path.At(index)
+// Called by the TableView when it needs the text to display for a given cell.
+func (m *MyModel) Value(row, col int) interface{} {
+	return m.item.At(row)
+	//item := m.items[row]
+
+	//switch col {
+	//case 0:
+	//	return item.Index
+
+	//case 1:
+	//	return item.Bar
+
+	//case 2:
+	//	return item.Baz
+
+	//case 3:
+	//	return item.Quux
+	//}
+
+	//panic("unexpected col")
 }
 
-func (m *MyModel) Enter(next string) {
-	m.Path.Enter(next)
+// Called by the TableView to retrieve if a given row is checked.
+func (m *MyModel) Checked(row int) bool {
+	//return m.items[row].checked
+	return false
+}
+
+// Called by the TableView when the user toggled the check box of a given row.
+func (m *MyModel) SetChecked(row int, checked bool) error {
+	//m.items[row].checked = checked
+
+	return nil
+}
+
+// Called by the TableView to sort the model.
+func (m *MyModel) Sort(col int, order walk.SortOrder) error {
+	return nil
+	//m.sortColumn, m.sortOrder = col, order
+
+	//sort.SliceStable(m.items, func(i, j int) bool {
+	//	a, b := m.items[i], m.items[j]
+
+	//	c := func(ls bool) bool {
+	//		if m.sortOrder == walk.SortAscending {
+	//			return ls
+	//		}
+
+	//		return !ls
+	//	}
+
+	//	switch m.sortColumn {
+	//	case 0:
+	//		return c(a.Index < b.Index)
+
+	//	case 1:
+	//		return c(a.Bar < b.Bar)
+
+	//	case 2:
+	//		return c(a.Baz < b.Baz)
+
+	//	case 3:
+	//		return c(a.Quux.Before(b.Quux))
+	//	}
+
+	//	panic("unreachable")
+	//})
+
+	//return m.SorterBase.Sort(col, order)
+}
+
+func (m *MyModel) ResetRows() {
+	// Create some random data.
+	//m.items = make([]*Foo, rand.Intn(50000))
+
+	//now := time.Now()
+
+	//for i := range m.items {
+	//	m.items[i] = &Foo{
+	//		Index: i,
+	//		Bar:   strings.Repeat("*", rand.Intn(5)+1),
+	//		Baz:   rand.Float64() * 1000,
+	//		Quux:  time.Unix(rand.Int63n(now.Unix()), 0),
+	//	}
+	//}
+
+	//// Notify TableView and other interested parties about the reset.
+	m.PublishRowsReset()
+
+	m.Sort(m.sortColumn, m.sortOrder)
 }

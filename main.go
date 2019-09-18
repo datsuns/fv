@@ -21,13 +21,14 @@ func main() {
 		MinSize:  declarative.Size{600, 400},
 		Layout:   declarative.HBox{},
 		Font:     f,
+		Children: []declarative.Widget{},
 	}.Create()
 
-	left, err := NewMyListBox(mw, "LEFT", ".")
+	left, err := NewMyView(mw, "LEFT", ".")
 	if err != nil {
 		panic(err)
 	}
-	right, err := NewMyListBox(mw, "RIGHT", ".")
+	right, err := NewMyView(mw, "RIGHT", ".")
 	if err != nil {
 		panic(err)
 	}
