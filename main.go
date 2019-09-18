@@ -1,10 +1,10 @@
 package main
 
 import (
-	//"fmt"
+	"fmt"
 	"github.com/lxn/walk"
 	. "github.com/lxn/walk/declarative"
-	//"github.com/lxn/win"
+	"github.com/lxn/win"
 )
 
 type MyMainWindow struct {
@@ -13,6 +13,15 @@ type MyMainWindow struct {
 
 func NewMyMainWindow() *MyMainWindow {
 	return &MyMainWindow{}
+}
+
+func (mw *MyMainWindow) WndProc(hwnd win.HWND, msg uint32, wParam, lParam uintptr) uintptr {
+	switch msg {
+	case win.WM_KEYDOWN:
+		fmt.Println("WM_KEYDOWN")
+		return mw.MainWindow.WndProc(hwnd, msg, wParam, lParam)
+	}
+	return mw.MainWindow.WndProc(hwnd, msg, wParam, lParam)
 }
 
 func main() {
