@@ -30,6 +30,7 @@ func NewMyView(parent walk.Container, name string, root string) (*MyView, error)
 	}
 	col := walk.NewTableViewColumn()
 	col.SetName("path")
+	col.SetWidth(300)
 	t.Columns().Clear()
 	t.Columns().Add(col)
 	mv := &MyView{t, NewMyModel(root), name, 0, nil}
