@@ -1,20 +1,19 @@
-// Copyright 2012 The Walk Authors. All rights reserved.
-// Use of lb source code is governed by a BSD-style
-// license that can be found in the LICENSE file.
-
 // +build windows
 
 package main
 
 import (
-	//"fmt"
+	"fmt"
 	"github.com/lxn/walk"
 	"github.com/lxn/win"
 )
 
 type MyListBox struct {
 	*walk.ListBox
-	model *MyModel
+	model   *MyModel
+	name    string
+	key     walk.Key
+	neigbor *MyListBox
 }
 
 var (
@@ -24,12 +23,12 @@ var (
 	}
 )
 
-func NewMyListBox(parent walk.Container) (*MyListBox, error) {
+func NewMyListBox(parent walk.Container, name string) (*MyListBox, error) {
 	lb, err := walk.NewListBox(parent)
 	if err != nil {
 		return nil, err
 	}
-	mlb := &MyListBox{lb, NewMyModel()}
+	mlb := &MyListBox{lb, NewMyModel(), name, 0, nil}
 	lb.SetModel(mlb.model)
 
 	if err := walk.InitWrapperWindow(mlb); err != nil {
@@ -42,11 +41,21 @@ func NewMyListBox(parent walk.Container) (*MyListBox, error) {
 func (mlb *MyListBox) WndProc(hwnd win.HWND, msg uint32, wParam, lParam uintptr) uintptr {
 	switch msg {
 	case win.WM_KEYDOWN:
-		if mapped, exists := keyMap[walk.Key(wParam)]; exists {
+		fmt.Printf("[%s] %v\n", mlb.name, walk.Key(wParam))
+		if walk.Key(wParam) == mlb.key {
+			fmt.Printf("[%s] change forcus\n", mlb.name)
+			mlb.neigbor.SetFocus()
+			return 0
+		} else if mapped, exists := keyMap[walk.Key(wParam)]; exists {
 			return mlb.ListBox.WidgetBase.WndProc(hwnd, msg, uintptr(mapped), lParam)
 		}
 	}
 	return mlb.ListBox.WndProc(hwnd, msg, wParam, lParam)
+}
+
+func (mlb *MyListBox) RegisterNeigbor(neigbor *MyListBox, key walk.Key) {
+	mlb.key = key
+	mlb.neigbor = neigbor
 }
 
 type MyModel struct {

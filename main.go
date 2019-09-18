@@ -4,31 +4,15 @@ import (
 	"fmt"
 	"github.com/lxn/walk"
 	. "github.com/lxn/walk/declarative"
-	"github.com/lxn/win"
 )
 
-type MyMainWindow struct {
-	*walk.MainWindow
-}
-
-func NewMyMainWindow() *MyMainWindow {
-	return &MyMainWindow{}
-}
-
-func (mw *MyMainWindow) WndProc(hwnd win.HWND, msg uint32, wParam, lParam uintptr) uintptr {
-	switch msg {
-	case win.WM_KEYDOWN:
-		fmt.Println("WM_KEYDOWN")
-		return mw.MainWindow.WndProc(hwnd, msg, wParam, lParam)
-	}
-	return mw.MainWindow.WndProc(hwnd, msg, wParam, lParam)
-}
-
 func main() {
-	mw := NewMyMainWindow()
+	var mw *walk.MainWindow
+
+	fmt.Println("hello")
 
 	MainWindow{
-		AssignTo: &mw.MainWindow,
+		AssignTo: &mw,
 		Title:    "SCREAMO",
 		MinSize:  Size{600, 400},
 		Layout:   HBox{},
@@ -73,8 +57,16 @@ func main() {
 		//	},
 	}.Create()
 
-	NewMyListBox(mw.MainWindow)
-	NewMyListBox(mw.MainWindow)
+	left, err := NewMyListBox(mw, "LEFT")
+	if err != nil {
+		panic(err)
+	}
+	right, err := NewMyListBox(mw, "RIGHT")
+	if err != nil {
+		panic(err)
+	}
+	left.RegisterNeigbor(right, walk.KeyL)
+	right.RegisterNeigbor(left, walk.KeyH)
 
 	//mw.MustRegisterProperty("ItemCount", walk.NewReadOnlyProperty(
 	//	func() interface{} {
@@ -82,5 +74,5 @@ func main() {
 	//	},
 	//	itemCountChangedPublisher.Event(),
 	//))
-	mw.MainWindow.Run()
+	mw.Run()
 }
