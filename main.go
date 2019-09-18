@@ -7,15 +7,19 @@ import (
 	//"github.com/lxn/win"
 )
 
+type MyMainWindow struct {
+	*walk.MainWindow
+}
+
+func NewMyMainWindow() *MyMainWindow {
+	return &MyMainWindow{}
+}
+
 func main() {
-	var mw *walk.MainWindow
-	//var inTE, outTE *walk.TextEdit
-	//var lb *walk.ListBox
-	//var model *EnvModel = NewEnvModel()
-	//itemCountChangedPublisher := walk.EventPublisher{}
+	mw := NewMyMainWindow()
 
 	MainWindow{
-		AssignTo: &mw,
+		AssignTo: &mw.MainWindow,
 		Title:    "SCREAMO",
 		MinSize:  Size{600, 400},
 		Layout:   HBox{},
@@ -60,8 +64,8 @@ func main() {
 		//	},
 	}.Create()
 
-	NewMyListBox(mw)
-	NewMyListBox(mw)
+	NewMyListBox(mw.MainWindow)
+	NewMyListBox(mw.MainWindow)
 
 	//mw.MustRegisterProperty("ItemCount", walk.NewReadOnlyProperty(
 	//	func() interface{} {
@@ -69,5 +73,5 @@ func main() {
 	//	},
 	//	itemCountChangedPublisher.Event(),
 	//))
-	mw.Run()
+	mw.MainWindow.Run()
 }
