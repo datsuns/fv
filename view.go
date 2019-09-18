@@ -39,9 +39,9 @@ func NewMyListBox(parent walk.Container, name string) (*MyListBox, error) {
 }
 
 func (mlb *MyListBox) WndProc(hwnd win.HWND, msg uint32, wParam, lParam uintptr) uintptr {
+	//fmt.Printf("[%v] [%v]\n", mlb.name, Msg2Str(msg))
 	switch msg {
 	case win.WM_KEYDOWN:
-		fmt.Printf("[%s] %v\n", mlb.name, walk.Key(wParam))
 		if walk.Key(wParam) == mlb.key {
 			fmt.Printf("[%s] change forcus\n", mlb.name)
 			mlb.neigbor.SetFocus()
@@ -49,6 +49,8 @@ func (mlb *MyListBox) WndProc(hwnd win.HWND, msg uint32, wParam, lParam uintptr)
 		} else if mapped, exists := keyMap[walk.Key(wParam)]; exists {
 			return mlb.ListBox.WidgetBase.WndProc(hwnd, msg, uintptr(mapped), lParam)
 		}
+	case win.WM_CHAR:
+		return 0
 	}
 	return mlb.ListBox.WndProc(hwnd, msg, wParam, lParam)
 }
