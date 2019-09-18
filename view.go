@@ -7,6 +7,7 @@
 package main
 
 import (
+	"fmt"
 	"github.com/lxn/walk"
 	"github.com/lxn/win"
 )
@@ -34,6 +35,7 @@ func NewMyListBox(parent walk.Container) (*MyListBox, error) {
 func (mlb *MyListBox) WndProc(hwnd win.HWND, msg uint32, wParam, lParam uintptr) uintptr {
 	switch msg {
 	case win.WM_KEYDOWN:
+		fmt.Printf("WM_KEYDOWN\n")
 		if walk.Key(wParam) == walk.KeyReturn {
 			return mlb.ListBox.WidgetBase.WndProc(hwnd, msg, wParam, lParam)
 		}
@@ -43,20 +45,20 @@ func (mlb *MyListBox) WndProc(hwnd win.HWND, msg uint32, wParam, lParam uintptr)
 
 type MyModel struct {
 	walk.ListModelBase
-	items []string
+	path *Path
 }
 
 func NewMyModel() *MyModel {
-	m := &MyModel{items: make([]string, 2)}
-	m.items[0] = "hello"
-	m.items[1] = "my"
+	m := &MyModel{}
+	m.path = NewPath("/")
+	m.path.Load()
 	return m
 }
 
 func (m *MyModel) ItemCount() int {
-	return len(m.items)
+	return m.path.Len()
 }
 
 func (m *MyModel) Value(index int) interface{} {
-	return m.items[index]
+	return m.path.At(index)
 }
